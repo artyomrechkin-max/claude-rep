@@ -1,0 +1,1202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UI Components Showcase (static)</title>
+<style>
+  :root {
+    --border: #e5e5e5;
+    --border-soft: #eee;
+    --bg-soft: #f4f4f5;
+    --bg-code: #fafafa;
+    --text: #111114;
+    --text-secondary: #6b7280;
+    --success-fg: #16a34a;
+    --success-bg: #dcfce7;
+    --danger-fg: #dc2626;
+    --danger-bg: #fee2e2;
+    --beta-fg: #c2410c;
+    --beta-bg: #ffedd5;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  code, pre, .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  header.page-header {
+    padding: 40px 32px 20px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  header.page-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+  header.page-header p {
+    margin: 0 0 10px;
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+  .static-note {
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--beta-fg);
+    background: var(--beta-bg);
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+
+  .gallery {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 28px 32px 160px;
+    align-items: flex-start;
+  }
+  .gallery::-webkit-scrollbar { height: 10px; }
+  .gallery::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+  .gallery::-webkit-scrollbar-track { background: transparent; }
+
+  .card {
+    flex: 0 0 340px;
+    width: 340px;
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-head { padding: 18px 20px 14px; min-height: 98px; }
+  .card-head h2 { font-size: 19px; font-weight: 800; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .card-head p { margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+
+  .preview {
+    height: 210px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    position: relative;
+    overflow: visible;
+  }
+
+  .code-wrap {
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    overflow: hidden;
+    background: var(--bg-code);
+  }
+  .code-details summary {
+    list-style: none;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 9px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: #f1f1f3;
+    border-top: 1px solid var(--border-soft);
+  }
+  .code-details summary::-webkit-details-marker { display: none; }
+  .code-details summary::marker { content: ""; }
+  .code-details summary:hover { background: #e9e9eb; color: var(--text); }
+  .code-details[open] summary { border-top: none; order: 2; }
+  .code-details { display: flex; flex-direction: column; }
+  .code-box {
+    position: relative;
+    padding: 14px 44px 14px 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-x: auto;
+    order: 1;
+  }
+  .code-box pre { margin: 0; white-space: pre; }
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    color: var(--text);
+    font-family: inherit;
+    cursor: default;
+  }
+
+  .tok-tag { color: #7c3aed; }
+  .tok-attr { color: #2563eb; }
+  .tok-str { color: #15803d; }
+  .tok-comment { color: #9ca3af; font-style: italic; }
+  .tok-kw { color: #db2777; }
+
+  .icon { display: inline-block; vertical-align: -3px; flex-shrink: 0; }
+
+  /* ---------- generic building blocks ---------- */
+
+  .btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .btn-solid { background: #111114; color: #fff; }
+  .btn-solid:hover { background: #000; }
+  .btn-solid:active { transform: translateY(1px); }
+  .btn-soft { background: var(--bg-soft); color: var(--text); }
+  .btn-soft:hover { background: #e9e9eb; }
+  .btn-outline { background: #fff; color: var(--text); border-color: #d4d4d8; }
+  .btn-outline:hover { background: #fafafa; }
+  .btn-ghost { background: transparent; color: var(--text); }
+  .btn-ghost:hover { background: var(--bg-soft); }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .field-input, .field-textarea {
+    font-family: inherit;
+    font-size: 13.5px;
+    border: 1px solid #d4d4d8;
+    border-radius: 8px;
+    padding: 9px 12px;
+    outline: none;
+    width: 100%;
+    color: var(--text);
+  }
+  .field-textarea { resize: none; }
+
+  /* visually-hidden native control, still clickable via its <label> */
+  .sr-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Tooltip */
+  .tooltip-wrap { position: relative; display: inline-block; }
+  .tooltip-trigger {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    font-size: 14.5px;
+  }
+  .tooltip-bubble {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2023;
+    color: #fff;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    max-width: 220px;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    z-index: 20;
+    display: none;
+  }
+  .tooltip-bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1f2023;
+  }
+  .tooltip-wrap:hover .tooltip-bubble,
+  .tooltip-wrap:focus-within .tooltip-bubble { display: block; }
+
+  /* Switch */
+  .switch-label {
+    width: 40px; height: 24px; border-radius: 999px; background: #e4e4e7;
+    display: inline-block; position: relative; cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .switch-label .knob {
+    position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+    border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    transition: transform 0.15s ease;
+  }
+  .sr-input:checked + .switch-label { background: #111114; }
+  .sr-input:checked + .switch-label .knob { transform: translateX(16px); }
+  .sr-input:focus-visible + .switch-label { outline: 2px solid #2563eb; outline-offset: 2px; }
+
+  /* Slider */
+  .slider-wrap { width: 100%; }
+  .slider-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 13.5px; }
+  .slider-row .val { color: var(--text-secondary); font-size: 12.5px; }
+  input[type="range"] { width: 100%; accent-color: #111114; cursor: pointer; }
+
+  /* details-based dropdown trigger (Select / SelectControl / Menu / Popover / DatePicker) */
+  .dd-details { position: relative; display: inline-block; }
+  .dd-details summary { list-style: none; cursor: pointer; }
+  .dd-details summary::-webkit-details-marker { display: none; }
+  .dd-details summary::marker { content: ""; }
+  .dd-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #d4d4d8;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13.5px;
+    background: #fff;
+    color: var(--text);
+  }
+  .dd-trigger:hover { background: #fafafa; }
+  .dd-trigger .chev { color: #9ca3af; margin-left: 2px; }
+  .dd-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    min-width: 180px;
+    z-index: 30;
+    padding: 6px;
+  }
+  .dd-item {
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: block;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .dd-item:hover { background: var(--bg-soft); }
+  .dd-item.disabled { color: #b7b7bb; }
+  .dd-sep { height: 1px; background: var(--border-soft); margin: 6px 2px; }
+
+  /* SegmentedControl */
+  .segmented { display: inline-flex; background: var(--bg-soft); border-radius: 999px; padding: 3px; gap: 2px; }
+  .segmented label {
+    font-family: inherit; font-size: 13px; font-weight: 600; padding: 6px 14px;
+    border-radius: 999px; cursor: pointer; color: #71717a; display: inline-block;
+  }
+  .segmented .sr-input:checked + label { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+
+  /* RadioGroup */
+  .radio-group { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+  .radio-item { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 14px; }
+  .radio-dot {
+    width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #c4c4c9;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .radio-item .sr-input:checked + .radio-dot { border-color: #111114; }
+  .radio-item .sr-input:checked + .radio-dot::after {
+    content: ""; width: 9px; height: 9px; border-radius: 50%; background: #111114;
+  }
+
+  /* Checkbox */
+  .checkbox-item { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 14px; }
+  .checkbox-box {
+    width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid #c4c4c9;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .checkbox-box .icon { display: none; color: #fff; }
+  .checkbox-item .sr-input:checked + .checkbox-box { background: #111114; border-color: #111114; }
+  .checkbox-item .sr-input:checked + .checkbox-box .icon { display: block; }
+
+  /* TagInput */
+  .tag-input-wrap {
+    width: 100%; border: 1px solid #d4d4d8; border-radius: 10px; padding: 8px;
+    display: flex; flex-wrap: wrap; gap: 6px; min-height: 90px; align-content: flex-start;
+  }
+  .tag-chip {
+    background: var(--bg-soft); border-radius: 6px; padding: 3px 6px 3px 9px;
+    font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .tag-chip .x { color: #9ca3af; font-size: 13px; line-height: 1; }
+  .tag-input-wrap input {
+    border: none; outline: none; font-family: inherit; font-size: 13px; flex: 1; min-width: 90px;
+  }
+
+  /* LoadingIndicator */
+  .spinner {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2.5px solid #e4e4e7; border-top-color: #111114;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* EmptyMessage */
+  .empty-msg { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .empty-icon {
+    width: 40px; height: 40px; border-radius: 10px; background: var(--bg-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .empty-msg h3 { margin: 0; font-size: 15px; font-weight: 700; }
+  .empty-msg p { margin: 0; font-size: 13px; color: var(--text-secondary); max-width: 240px; }
+
+  /* Calendar (static, single month, no navigation) */
+  .cal {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12); padding: 10px 12px 14px; width: 230px;
+  }
+  .cal-head { text-align: center; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+  .cal-grid .dow { font-size: 10.5px; color: #9ca3af; font-weight: 600; padding-bottom: 4px; }
+  .cal-day { font-size: 12px; padding: 6px 0; border-radius: 6px; color: var(--text); }
+  .cal-day.selected { background: #111114; color: #fff; }
+  .cal-day.in-range { background: #f0f0f2; }
+  .cal-day.empty { visibility: hidden; }
+
+  /* Popover */
+  .popover-panel {
+    position: absolute; top: 0; left: calc(100% + 10px);
+    background: #fff; border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.14); padding: 12px; width: 220px; z-index: 30;
+  }
+
+  /* Alert */
+  .alert-box {
+    display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; width: 100%;
+  }
+  .alert-icon {
+    width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #111114;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .alert-box h4 { margin: 0 0 3px; font-size: 13.5px; font-weight: 700; }
+  .alert-box p { margin: 0; font-size: 12.5px; color: var(--text-secondary); line-height: 1.4; }
+  .show-again { display: none; }
+  #alert-dismiss:checked ~ .alert-box { display: none; }
+  #alert-dismiss:checked ~ .show-again { display: inline-flex; }
+
+  /* Avatar */
+  .avatar {
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #52525b; background: var(--bg-soft); flex-shrink: 0; overflow: hidden;
+  }
+  .avatar-group { display: flex; }
+  .avatar-group .avatar { border: 2px solid #fff; margin-left: -10px; }
+  .avatar-group .avatar:first-child { margin-left: 0; }
+
+  /* Markdown sample */
+  .md-sample h1 { font-size: 20px; margin: 0 0 6px; }
+  .md-sample h2 { font-size: 16px; margin: 10px 0 4px; }
+  .md-sample p { font-size: 12.5px; margin: 4px 0; color: #27272a; line-height: 1.5; }
+
+  footer.page-footer { padding: 24px 32px 48px; color: var(--text-secondary); font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>UI Components Showcase</h1>
+  <p>27 component recreations from the @openai/apps-sdk-ui docs.</p>
+  <span class="static-note">Static build &mdash; no JavaScript. Some interactions (copy, live values, adding tags, calendar navigation) are simplified or decorative.</span>
+</header>
+
+<div class="gallery">
+
+  <!-- 1. Tooltip -->
+  <div class="card">
+    <div class="card-head"><h2>Tooltip</h2><p>Brief and informative hover text</p></div>
+    <div class="preview">
+      <span class="tooltip-wrap" tabindex="0">
+        <span class="tooltip-trigger">Simple text with tooltip</span>
+        <span class="tooltip-bubble">This is additional context that appears when the trigger is hovered or focused</span>
+      </span>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Tooltip } from "@openai/apps-sdk-ui/components/Tooltip";
+
+&lt;Tooltip content="This is additional context that appears when the trigger is hovered or focused"&gt;
+  &lt;Tooltip.TriggerDecorator&gt;
+    Simple text with tooltip
+  &lt;/Tooltip.TriggerDecorator&gt;
+&lt;/Tooltip&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 2. Textarea -->
+  <div class="card">
+    <div class="card-head"><h2>Textarea</h2><p>Semantic multi-line text input collection</p></div>
+    <div class="preview">
+      <textarea class="field-textarea" placeholder="Enter text..." rows="3"></textarea>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Textarea } from "@openai/apps-sdk-ui/components/Textarea";
+
+&lt;Textarea
+  autoResize
+  placeholder="Enter text..."
+  rows={3}
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 3. TextLink -->
+  <div class="card">
+    <div class="card-head"><h2>TextLink</h2><p>Semantic link used for both internal and external links</p></div>
+    <div class="preview">
+      <p style="font-size:13.5px;line-height:1.6;margin:0;">
+        You can use the <a href="#" style="color:inherit;text-decoration:underline;">responses endpoint</a> to generate text, or use one of OpenAI's <a href="#" style="color:inherit;text-decoration:underline;">official SDKs</a> for your preferred language.
+      </p>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { TextLink } from "@openai/apps-sdk-ui/components/TextLink"
+
+&lt;p&gt;
+  You can use the{' '}
+  &lt;TextLink href="#"&gt;responses endpoint&lt;/TextLink&gt;{' '}
+  to generate text, or use one of OpenAI's{' '}
+  &lt;TextLink href="#"&gt;official SDKs&lt;/TextLink&gt;{' '}
+  for your preferred language.
+&lt;/p&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 4. CopyTooltip -->
+  <div class="card">
+    <div class="card-head"><h2>CopyTooltip</h2><p>Allow users to easily copy to clipboard</p></div>
+    <div class="preview" style="flex-direction:column;gap:10px;">
+      <button type="button" class="btn btn-solid">
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        Copy
+      </button>
+      <span class="mono" style="font-size:13px;text-decoration:underline;text-decoration-style:dotted;">sess_12345abcdefg</span>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { CopyTooltip } from "@openai/apps-sdk-ui/components/Tooltip";
+
+&lt;CopyTooltip copyValue="Very cool content to copy"&gt;
+  &lt;Tooltip.TriggerDecorator&gt;
+    sess_12345abcdefg
+  &lt;/Tooltip.TriggerDecorator&gt;
+&lt;/CopyTooltip&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 5. TagInput -->
+  <div class="card">
+    <div class="card-head"><h2>TagInput</h2><p>Enter multiple unique tags</p></div>
+    <div class="preview">
+      <div class="tag-input-wrap">
+        <span class="tag-chip">jane@openai.com <span class="x">&times;</span></span>
+        <span class="tag-chip">sam@openai.com <span class="x">&times;</span></span>
+        <input type="text" placeholder="example@openai.com" />
+      </div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { TagInput } from "@openai/apps-sdk-ui/components/TagInput";
+
+&lt;TagInput
+  autoFocus
+  placeholder="example@openai.com"
+  rows={3}
+  validator={function Xs(){}}
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 6. Switch -->
+  <div class="card">
+    <div class="card-head"><h2>Switch</h2><p>Toggle control for on and off states</p></div>
+    <div class="preview">
+      <input type="checkbox" id="switch-demo" class="sr-input" />
+      <label for="switch-demo" class="switch-label"><span class="knob"></span></label>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Switch } from "@openai/apps-sdk-ui/components/Switch";
+
+&lt;Switch /&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 7. Slider -->
+  <div class="card">
+    <div class="card-head"><h2>Slider</h2><p>Fine-tune values within a set range</p></div>
+    <div class="preview">
+      <div class="slider-wrap">
+        <div class="slider-row"><span>Example field</span><span class="val">1000&nbsp;ms</span></div>
+        <input type="range" min="0" max="2000" step="10" value="1000" />
+      </div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Slider } from "@openai/apps-sdk-ui/components/Slider";
+
+&lt;Slider
+  label="Example field"
+  max={2000}
+  min={0}
+  onChange={function Xs(){}}
+  resetValue={1000}
+  step={10}
+  unit="ms"
+  value={1000}
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 8. SelectControl -->
+  <div class="card">
+    <div class="card-head"><h2>SelectControl</h2><p>Customizable select control for use with any type of floating UI</p></div>
+    <div class="preview">
+      <details class="dd-details">
+        <summary class="dd-trigger">
+          <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+          Select date...
+          <svg class="icon chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 15 12 20 17 15"/><polyline points="7 9 12 4 17 9"/></svg>
+        </summary>
+        <div class="dd-panel">
+          <span class="dd-item">Aug 1, 2026</span>
+          <span class="dd-item">Aug 15, 2026</span>
+          <span class="dd-item">Sep 1, 2026</span>
+        </div>
+      </details>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { SelectControl } from "@openai/apps-sdk-ui/components/SelectControl";
+
+&lt;Menu&gt;
+  &lt;Menu.Trigger&gt;
+    &lt;SelectControl
+      selected={!!value}
+      onClearClick={() =&gt; setValue("")}
+      StartIcon={CalendarAlt}
+    &gt;
+      {value || placeholder}
+    &lt;/SelectControl&gt;
+  &lt;/Menu.Trigger&gt;
+  &lt;Menu.Content&gt;
+    &lt;Menu.RadioGroup value={value} onChange={setValue}&gt;
+      ...
+    &lt;/Menu.RadioGroup&gt;
+  &lt;/Menu.Content&gt;
+&lt;/Menu&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 9. Select -->
+  <div class="card">
+    <div class="card-head"><h2>Select</h2><p>Choose from a dropdown of options</p></div>
+    <div class="preview">
+      <details class="dd-details">
+        <summary class="dd-trigger">
+          Select a fruit...
+          <svg class="icon chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 15 12 20 17 15"/><polyline points="7 9 12 4 17 9"/></svg>
+        </summary>
+        <div class="dd-panel">
+          <span class="dd-item">Apple</span>
+          <span class="dd-item">Banana</span>
+          <span class="dd-item">Mango</span>
+          <span class="dd-item">Papaya</span>
+        </div>
+      </details>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Select } from "@openai/apps-sdk-ui/components/Select";
+
+&lt;Select
+  value={fruit}
+  options={fruits}
+  onChange={handleChange}
+  placeholder="Select a fruit..."
+  variant="solid"
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 10. SegmentedControl -->
+  <div class="card">
+    <div class="card-head"><h2>SegmentedControl</h2><p>Toggle through grouped options</p></div>
+    <div class="preview">
+      <div class="segmented" role="radiogroup" aria-label="Select view">
+        <input type="radio" name="segment-demo" id="seg-all" class="sr-input" checked />
+        <label for="seg-all">All</label>
+        <input type="radio" name="segment-demo" id="seg-failed" class="sr-input" />
+        <label for="seg-failed">Failed</label>
+        <input type="radio" name="segment-demo" id="seg-success" class="sr-input" />
+        <label for="seg-success">Successful</label>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { SegmentedControl } from "@openai/apps-sdk-ui/components/SegmentedControl";
+
+&lt;SegmentedControl
+  aria-label="Select view"
+  onChange={function Xs(){}}
+  value="all"
+&gt;
+  &lt;SegmentedControl.Option value="all"&gt;All&lt;/SegmentedControl.Option&gt;
+  &lt;SegmentedControl.Option value="failed"&gt;Failed&lt;/SegmentedControl.Option&gt;
+  &lt;SegmentedControl.Option value="successful"&gt;Successful&lt;/SegmentedControl.Option&gt;
+&lt;/SegmentedControl&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 11. RadioGroup -->
+  <div class="card">
+    <div class="card-head"><h2>RadioGroup</h2><p>Semantic radio option selection</p></div>
+    <div class="preview">
+      <div>
+        <h3 style="font-size:13px;font-weight:700;margin:0 0 12px;">Notification frequency</h3>
+        <div class="radio-group" role="radiogroup" aria-label="Notification frequency">
+          <label class="radio-item"><input type="radio" name="radio-demo" class="sr-input" checked /><span class="radio-dot"></span>Daily</label>
+          <label class="radio-item"><input type="radio" name="radio-demo" class="sr-input" /><span class="radio-dot"></span>Weekly</label>
+          <label class="radio-item"><input type="radio" name="radio-demo" class="sr-input" /><span class="radio-dot"></span>Monthly</label>
+          <label class="radio-item"><input type="radio" name="radio-demo" class="sr-input" /><span class="radio-dot"></span>Never</label>
+        </div>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { RadioGroup } from "@/components/ui/RadioGroup";
+
+const [frequency, setFrequency] = useState("daily");
+
+&lt;RadioGroup direction="col" value={frequency} onChange={setFrequency} aria-label="Notification frequency"&gt;
+  &lt;RadioGroup.Item value="daily"&gt;Daily&lt;/RadioGroup.Item&gt;
+  &lt;RadioGroup.Item value="weekly"&gt;Weekly&lt;/RadioGroup.Item&gt;
+  &lt;RadioGroup.Item value="monthly"&gt;Monthly&lt;/RadioGroup.Item&gt;
+  &lt;RadioGroup.Item value="never"&gt;Never&lt;/RadioGroup.Item&gt;
+&lt;/RadioGroup&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 12. Popover -->
+  <div class="card">
+    <div class="card-head"><h2>Popover</h2><p>Generic floating UI utility for contextual actions</p></div>
+    <div class="preview">
+      <details class="dd-details">
+        <summary class="btn btn-solid">Generate</summary>
+        <div class="popover-panel">
+          <textarea class="field-textarea" rows="3" placeholder="Enter a prompt..."></textarea>
+        </div>
+      </details>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Popover } from "@openai/apps-sdk-ui/components/Popover";
+
+&lt;Popover&gt;
+  &lt;Popover.Trigger&gt;
+    &lt;Button color="primary"&gt;Generate&lt;/Button&gt;
+  &lt;/Popover.Trigger&gt;
+  &lt;Popover.Content side="right"&gt;
+    &lt;Textarea /&gt;
+    &lt;ActionBar /&gt;
+  &lt;/Popover.Content&gt;
+&lt;/Popover&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 13. Menu -->
+  <div class="card">
+    <div class="card-head"><h2>Menu</h2><p>Structured actions in a dropdown list</p></div>
+    <div class="preview">
+      <details class="dd-details">
+        <summary class="btn btn-ghost">
+          Sample menu
+          <svg class="icon chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="dd-panel" style="min-width:210px">
+          <div class="dd-item">
+            <p style="margin:0;font-weight:700;font-size:13px;">Sam Smith</p>
+            <p style="margin:0;font-size:12px;color:var(--text-secondary);">sam.smith@gmail.com</p>
+          </div>
+          <div class="dd-sep"></div>
+          <a class="dd-item" href="#">Your profile</a>
+          <a class="dd-item" href="#">Terms &amp; policies</a>
+          <span class="dd-item disabled">Feature flags</span>
+          <div class="dd-sep"></div>
+          <span class="dd-item">Logout</span>
+        </div>
+      </details>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Menu } from "@openai/apps-sdk-ui/components/Menu"
+
+&lt;Menu&gt;
+  &lt;Menu.Trigger&gt;
+    &lt;Button color="primary" size="lg" variant="ghost"&gt;
+      Sample menu &lt;ChevronDown /&gt;
+    &lt;/Button&gt;
+  &lt;/Menu.Trigger&gt;
+  &lt;Menu.Content width={210} minWidth={210}&gt;
+    &lt;Menu.Item&gt;
+      &lt;p className="font-semibold"&gt;Sam Smith&lt;/p&gt;
+      &lt;p className="text-secondary"&gt;sam.smith@gmail.com&lt;/p&gt;
+    &lt;/Menu.Item&gt;
+    &lt;Menu.Separator /&gt;
+    &lt;Menu.Link href="/settings"&gt;Your profile&lt;/Menu.Link&gt;
+    &lt;Menu.Link href="https://openai.com/policies/"&gt;Terms &amp; policies&lt;/Menu.Link&gt;
+    &lt;Menu.Item disabled onSelect={() =&gt; {}}&gt;Feature flags&lt;/Menu.Item&gt;
+    &lt;Menu.Separator /&gt;
+    &lt;Menu.Item onSelect={() =&gt; {}}&gt;Logout&lt;/Menu.Item&gt;
+  &lt;/Menu.Content&gt;
+&lt;/Menu&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 14. Markdown -->
+  <div class="card">
+    <div class="card-head"><h2>Markdown</h2><p>Render rich formatted content</p></div>
+    <div class="preview">
+      <div class="md-sample" style="width:100%">
+        <h1>Heading 1</h1>
+        <h2>Heading 2</h2>
+        <p><em>Emphasis</em> with asterisks, <strong>strong emphasis</strong>, and <s>strikethrough</s>.</p>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Markdown } from "@openai/apps-sdk-ui/components/Markdown"
+
+&lt;Markdown&gt;
+{`# Heading 1
+## Heading 2
+
+*Emphasis*, **strong emphasis**, ~~strikethrough~~.`}
+&lt;/Markdown&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 15. Input -->
+  <div class="card">
+    <div class="card-head"><h2>Input</h2><p>Semantic input text collection</p></div>
+    <div class="preview">
+      <input class="field-input" placeholder="Enter text..." style="max-width:220px" />
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Input } from "@openai/apps-sdk-ui/components/Input";
+
+&lt;Input
+  placeholder="Enter text..."
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 16. LoadingIndicator -->
+  <div class="card">
+    <div class="card-head"><h2>LoadingIndicator</h2><p>Simple spinning indicator for general loading states</p></div>
+    <div class="preview"><div class="spinner"></div></div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { LoadingIndicator } from "@openai/apps-sdk-ui/components/Indicator";
+
+&lt;LoadingIndicator size={24} /&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 17. EmptyMessage -->
+  <div class="card">
+    <div class="card-head"><h2>EmptyMessage</h2><p>Gracefully inform users when there's nothing to see</p></div>
+    <div class="preview">
+      <div class="empty-msg">
+        <div class="empty-icon">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polygon points="14.5,9.5 10.6,10.6 9.5,14.5 13.4,13.4" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Your evaluations will appear here</h3>
+        <p>Create an evaluation to assess your model's responses</p>
+        <button type="button" class="btn btn-solid" style="margin-top:4px">
+          <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Create
+        </button>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { EmptyMessage } from "@openai/apps-sdk-ui/components/EmptyMessage"
+
+&lt;EmptyMessage&gt;
+  &lt;EmptyMessage.Icon&gt;
+    &lt;Explore /&gt;
+  &lt;/EmptyMessage.Icon&gt;
+  &lt;EmptyMessage.Title&gt;Your evaluations will appear here&lt;/EmptyMessage.Title&gt;
+  &lt;EmptyMessage.Description&gt;
+    Create an evaluation to assess your model's responses
+  &lt;/EmptyMessage.Description&gt;
+  &lt;EmptyMessage.ActionRow&gt;
+    &lt;Button color="primary" onClick={() =&gt; {}} size="lg"&gt;
+      &lt;Plus className="mr-[-2px]" /&gt;
+      Create
+    &lt;/Button&gt;
+  &lt;/EmptyMessage.ActionRow&gt;
+&lt;/EmptyMessage&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 18. DateRangePicker -->
+  <div class="card">
+    <div class="card-head"><h2>DateRangePicker</h2><p>Select a date range with an interactive calendar</p></div>
+    <div class="preview">
+      <details class="dd-details">
+        <summary class="dd-trigger">
+          <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+          Select date range...
+          <svg class="icon chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 15 12 20 17 15"/><polyline points="7 9 12 4 17 9"/></svg>
+        </summary>
+        <div style="position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);z-index:30;">
+          <div class="cal">
+            <div class="cal-head">August 2026</div>
+            <div class="cal-grid">
+              <span class="dow">Su</span><span class="dow">Mo</span><span class="dow">Tu</span><span class="dow">We</span><span class="dow">Th</span><span class="dow">Fr</span><span class="dow">Sa</span>
+              <span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day">1</span>
+              <span class="cal-day">2</span><span class="cal-day">3</span><span class="cal-day">4</span><span class="cal-day">5</span><span class="cal-day">6</span><span class="cal-day">7</span><span class="cal-day">8</span>
+              <span class="cal-day">9</span><span class="cal-day">10</span><span class="cal-day in-range">11</span><span class="cal-day in-range">12</span><span class="cal-day in-range">13</span><span class="cal-day selected">14</span><span class="cal-day">15</span>
+              <span class="cal-day">16</span><span class="cal-day">17</span><span class="cal-day">18</span><span class="cal-day">19</span><span class="cal-day">20</span><span class="cal-day">21</span><span class="cal-day">22</span>
+              <span class="cal-day">23</span><span class="cal-day">24</span><span class="cal-day">25</span><span class="cal-day">26</span><span class="cal-day">27</span><span class="cal-day">28</span><span class="cal-day">29</span>
+              <span class="cal-day">30</span><span class="cal-day">31</span>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { DateRangePicker } from "@openai/apps-sdk-ui/components/DateRangePicker";
+
+&lt;DateRangePicker
+  value={selectedDateRange}
+  onChange={(nextDateRange) =&gt; {
+    setSelectedDateRange(nextDateRange);
+  }}
+  shortcuts={dayShortcuts}
+  clearable
+  pill
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 19. DatePicker -->
+  <div class="card">
+    <div class="card-head"><h2>DatePicker</h2><p>Select a single date with an interactive calendar</p></div>
+    <div class="preview">
+      <details class="dd-details">
+        <summary class="dd-trigger">
+          <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+          Select date...
+          <svg class="icon chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 15 12 20 17 15"/><polyline points="7 9 12 4 17 9"/></svg>
+        </summary>
+        <div style="position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);z-index:30;">
+          <div class="cal">
+            <div class="cal-head">August 2026</div>
+            <div class="cal-grid">
+              <span class="dow">Su</span><span class="dow">Mo</span><span class="dow">Tu</span><span class="dow">We</span><span class="dow">Th</span><span class="dow">Fr</span><span class="dow">Sa</span>
+              <span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day empty"></span><span class="cal-day">1</span>
+              <span class="cal-day">2</span><span class="cal-day">3</span><span class="cal-day">4</span><span class="cal-day">5</span><span class="cal-day">6</span><span class="cal-day">7</span><span class="cal-day">8</span>
+              <span class="cal-day">9</span><span class="cal-day">10</span><span class="cal-day">11</span><span class="cal-day">12</span><span class="cal-day">13</span><span class="cal-day">14</span><span class="cal-day">15</span>
+              <span class="cal-day">16</span><span class="cal-day">17</span><span class="cal-day">18</span><span class="cal-day">19</span><span class="cal-day">20</span><span class="cal-day selected">21</span><span class="cal-day">22</span>
+              <span class="cal-day">23</span><span class="cal-day">24</span><span class="cal-day">25</span><span class="cal-day">26</span><span class="cal-day">27</span><span class="cal-day">28</span><span class="cal-day">29</span>
+              <span class="cal-day">30</span><span class="cal-day">31</span>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { DatePicker } from "@openai/apps-sdk-ui/components/DatePicker";
+
+&lt;DatePicker
+  value={selectedDate}
+  onChange={(nextDate) =&gt; {
+    setSelectedDate(nextDate);
+  }}
+  clearable
+  pill
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 20. CodeBlock -->
+  <div class="card">
+    <div class="card-head"><h2>CodeBlock</h2><p>Display syntax-highlighted code snippets</p></div>
+    <div class="preview">
+      <div style="width:100%;max-width:100%;max-height:100%;background:#fafafa;border:1px solid var(--border-soft);border-radius:10px;padding:12px 14px;position:relative;overflow:auto;box-sizing:border-box;">
+        <span class="copy-btn">
+          <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        </span>
+        <pre class="mono" style="margin:0;font-size:11.5px;line-height:1.7;"><span class="tok-kw">const</span> stream = <span class="tok-kw">await</span> <span class="tok-tag">openai</span>.chat.completions.<span class="tok-attr">create</span>({
+  model: <span class="tok-str">"gpt-4.1"</span>,
+  messages: [{ role: <span class="tok-str">"user"</span>, content: <span class="tok-str">"Hi"</span> }],
+  stream: <span class="tok-kw">true</span>,
+});</pre>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { CodeBlock } from "@openai/apps-sdk-ui/components/CodeBlock";
+
+const codeSnippet = '...'
+
+return (
+  &lt;CodeBlock language="javascript"&gt;{codeSnippet}&lt;/CodeBlock&gt;
+)</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 21. Checkbox -->
+  <div class="card">
+    <div class="card-head"><h2>Checkbox</h2><p>Toggle control for on and off states</p></div>
+    <div class="preview">
+      <label class="checkbox-item">
+        <input type="checkbox" class="sr-input" />
+        <span class="checkbox-box"><svg class="icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        Same as billing address
+      </label>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Checkbox } from "@openai/apps-sdk-ui/components/Checkbox";
+
+&lt;Checkbox
+  label="Same as billing address"
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 22. ButtonLink -->
+  <div class="card">
+    <div class="card-head"><h2>ButtonLink</h2><p>Semantic link styled as a button</p></div>
+    <div class="preview">
+      <a href="#" class="btn btn-solid">
+        View API Keys
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+      </a>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { ButtonLink } from "@openai/apps-sdk-ui/components/Button";
+
+&lt;ButtonLink
+  color="primary"
+  href="https://platform.openai.com"
+&gt;
+  View API Keys
+  &lt;ArrowRight /&gt;
+&lt;/ButtonLink&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 23. Button -->
+  <div class="card">
+    <div class="card-head"><h2>Button</h2><p>Create actions in many different styles</p></div>
+    <div class="preview">
+      <button type="button" class="btn btn-solid">Submit</button>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Button } from "@openai/apps-sdk-ui/components/Button";
+
+&lt;Button
+  color="primary"
+  size="md"
+  variant="solid"
+&gt;
+  Submit
+&lt;/Button&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 24. Badge -->
+  <div class="card">
+    <div class="card-head"><h2>Badge</h2><p>Emphasize details with a status indicator</p></div>
+    <div class="preview">
+      <span class="badge" style="color:var(--success-fg);background:var(--success-bg);">New</span>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Badge } from "@openai/apps-sdk-ui/components/Badge";
+
+&lt;Badge
+  color="success"
+  size="md"
+&gt;
+  New
+&lt;/Badge&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 25. Alert -->
+  <div class="card">
+    <div class="card-head"><h2>Alert</h2><p>Call attention to a specific message or warning</p></div>
+    <div class="preview">
+      <input type="checkbox" id="alert-dismiss" class="sr-input" />
+      <div class="alert-box">
+        <span class="alert-icon">
+          <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.6" r="0.9" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <div style="flex:1">
+          <h4>Scheduled maintenance</h4>
+          <p>We'll be offline 2 - 4 AM UTC on July 14 while we upgrade our database.</p>
+        </div>
+        <label for="alert-dismiss" class="btn btn-soft" style="padding:5px 12px;font-size:12px;">Dismiss</label>
+      </div>
+      <label for="alert-dismiss" class="btn btn-outline show-again">Show alert again</label>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Alert } from "@openai/apps-sdk-ui/components/Alert";
+
+&lt;Alert
+  actions={&lt;Button color="primary" pill variant="soft"&gt;Dismiss&lt;/Button&gt;}
+  description="We'll be offline 2 - 4 AM UTC on July 14 while we upgrade our database."
+  title="Scheduled maintenance"
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 26. Avatar -->
+  <div class="card">
+    <div class="card-head"><h2>Avatar</h2><p>Display user identities with either text, photo, or an icon</p></div>
+    <div class="preview">
+      <div class="avatar" style="width:48px;height:48px;font-size:17px;">J</div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { Avatar } from "@openai/apps-sdk-ui/components/Avatar";
+
+&lt;Avatar
+  name="Jane"
+  size={48}
+/&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 27. AvatarGroup -->
+  <div class="card">
+    <div class="card-head"><h2>AvatarGroup</h2><p>Display avatars as a single stack</p></div>
+    <div class="preview">
+      <div class="avatar-group">
+        <div class="avatar" style="width:42px;height:42px;font-size:15px;background:#fbcfe8;">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        </div>
+        <div class="avatar" style="width:42px;height:42px;font-size:15px;background:#bfdbfe;">W</div>
+        <div class="avatar" style="width:42px;height:42px;font-size:15px;background:#ddd6fe;">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><line x1="12" y1="2" x2="12" y2="8"/><circle cx="12" cy="2" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="14" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none"/><line x1="2" y1="13" x2="4" y2="13"/><line x1="20" y1="13" x2="22" y2="13"/></svg>
+        </div>
+        <div class="avatar" style="width:42px;height:42px;font-size:13px;background:#dcfce7;color:#16a34a;">+5</div>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <details class="code-details">
+        <summary>Show code</summary>
+        <div class="code-box"><pre>import { AvatarGroup } from "@openai/apps-sdk-ui/components/Avatar";
+
+&lt;AvatarGroup size={42}&gt;
+  &lt;Avatar name="Tyler" imageUrl="https://gravatar.com/avatar/xyz" /&gt;
+  &lt;Avatar name="Jane" color="primary" variant="solid" /&gt;
+  &lt;Avatar name="Tech support" Icon={Robot} variant="solid" /&gt;
+  &lt;Avatar overflowCount={5} /&gt;
+&lt;/AvatarGroup&gt;</pre></div>
+      </details>
+    </div>
+  </div>
+
+</div>
+
+<footer class="page-footer">
+  Recreated for demonstration purposes &mdash; visual and interaction approximations of the documented components. Static build (no JavaScript) for embedding in sandboxed iframes.
+</footer>
+
+</body>
+</html>
