@@ -53,7 +53,7 @@
     display: flex;
     gap: 20px;
     overflow-x: auto;
-    padding: 28px 32px 48px;
+    padding: 28px 32px 160px;
     align-items: flex-start;
     scroll-snap-type: x proximity;
   }
@@ -66,7 +66,6 @@
     width: 340px;
     border: 1px solid var(--border-soft);
     border-radius: 14px;
-    overflow: hidden;
     background: #fff;
     scroll-snap-align: start;
     display: flex;
@@ -74,6 +73,7 @@
   }
   .card-head {
     padding: 18px 20px 14px;
+    min-height: 98px;
   }
   .card-head h2 {
     font-size: 19px;
@@ -89,8 +89,8 @@
   }
 
   .preview {
-    flex: 1;
-    min-height: 190px;
+    height: 210px;
+    flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -98,16 +98,27 @@
     border-top: 1px solid var(--border-soft);
     border-bottom: 1px solid var(--border-soft);
     position: relative;
+    overflow: visible;
   }
 
+  .code-wrap {
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    overflow: hidden;
+    background: var(--bg-code);
+  }
   .code-box {
     position: relative;
-    background: var(--bg-code);
     padding: 14px 44px 14px 16px;
     font-size: 12px;
     line-height: 1.6;
     overflow-x: auto;
-    max-height: 220px;
+    overflow-y: hidden;
+    max-height: 128px;
+    transition: max-height 0.2s ease;
+  }
+  .code-box.expanded {
+    max-height: 600px;
     overflow-y: auto;
   }
   .code-box pre { margin: 0; white-space: pre; }
@@ -126,6 +137,23 @@
     font-family: inherit;
   }
   .copy-btn:hover { background: #f5f5f5; }
+  .expand-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 7px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: #f1f1f3;
+    border: none;
+    border-top: 1px solid var(--border-soft);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .expand-btn:hover { background: #e9e9eb; color: var(--text); }
+
+  .icon { display: inline-block; vertical-align: -3px; flex-shrink: 0; }
 
   .tok-tag { color: #7c3aed; }
   .tok-attr { color: #2563eb; }
@@ -270,7 +298,7 @@
     font-family: inherit;
   }
   .dd-trigger:hover { background: #fafafa; }
-  .dd-trigger .chev { color: #9ca3af; font-size: 10px; margin-left: 2px; }
+  .dd-trigger .chev { color: #9ca3af; margin-left: 2px; }
   .dd-panel {
     position: absolute;
     top: calc(100% + 6px);
@@ -828,8 +856,108 @@ function useOutsideClose(open, setOpen) {
   return ref;
 }
 
+/* Icon set — approximations of @openai/apps-sdk-ui/components/Icon, drawn as
+   simple stroked line icons so nothing here relies on emoji glyphs. */
+const ICONS = {
+  calendar: (
+    <React.Fragment>
+      <rect x="3" y="4" width="18" height="17" rx="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="9" x2="21" y2="9" />
+    </React.Fragment>
+  ),
+  chevronDown: <polyline points="6 9 12 15 18 9" />,
+  chevronLeft: <polyline points="15 18 9 12 15 6" />,
+  chevronRight: <polyline points="9 18 15 12 9 6" />,
+  chevronsUpDown: (
+    <React.Fragment>
+      <polyline points="7 15 12 20 17 15" />
+      <polyline points="7 9 12 4 17 9" />
+    </React.Fragment>
+  ),
+  copy: (
+    <React.Fragment>
+      <rect x="9" y="9" width="12" height="12" rx="2" />
+      <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+    </React.Fragment>
+  ),
+  plus: (
+    <React.Fragment>
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </React.Fragment>
+  ),
+  check: <polyline points="20 6 9 17 4 12" />,
+  info: (
+    <React.Fragment>
+      <circle cx="12" cy="12" r="9" />
+      <line x1="12" y1="11" x2="12" y2="16" />
+      <circle cx="12" cy="7.6" r="0.9" fill="currentColor" stroke="none" />
+    </React.Fragment>
+  ),
+  compass: (
+    <React.Fragment>
+      <circle cx="12" cy="12" r="9" />
+      <polygon points="14.5,9.5 10.6,10.6 9.5,14.5 13.4,13.4" fill="currentColor" stroke="none" />
+    </React.Fragment>
+  ),
+  arrowRight: (
+    <React.Fragment>
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="13 6 19 12 13 18" />
+    </React.Fragment>
+  ),
+  bot: (
+    <React.Fragment>
+      <rect x="4" y="8" width="16" height="12" rx="2" />
+      <line x1="12" y1="2" x2="12" y2="8" />
+      <circle cx="12" cy="2" r="1" fill="currentColor" stroke="none" />
+      <circle cx="9" cy="14" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none" />
+      <line x1="2" y1="13" x2="4" y2="13" />
+      <line x1="20" y1="13" x2="22" y2="13" />
+    </React.Fragment>
+  ),
+  user: (
+    <React.Fragment>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+    </React.Fragment>
+  ),
+};
+
+function Icon({ name, size = 16, className = "", style }) {
+  return (
+    <svg
+      className={"icon " + className}
+      style={style}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {ICONS[name]}
+    </svg>
+  );
+}
+
 function CodeBox({ code }) {
   const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [needsToggle, setNeedsToggle] = useState(false);
+  const preRef = useRef(null);
+
+  useEffect(() => {
+    if (preRef.current) {
+      setNeedsToggle(preRef.current.scrollHeight > 132);
+    }
+  }, [code]);
+
   function onCopy() {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(code).catch(() => {});
@@ -838,9 +966,16 @@ function CodeBox({ code }) {
     setTimeout(() => setCopied(false), 1200);
   }
   return (
-    <div className="code-box">
-      <button className="copy-btn" onClick={onCopy}>{copied ? "Copied" : "Copy"}</button>
-      <pre>{code}</pre>
+    <div className="code-wrap">
+      <div className={"code-box" + (expanded ? " expanded" : "")}>
+        <button className="copy-btn" onClick={onCopy}>{copied ? "Copied" : "Copy"}</button>
+        <pre ref={preRef}>{code}</pre>
+      </div>
+      {needsToggle && (
+        <button className="expand-btn" onClick={() => setExpanded(!expanded)}>
+          {expanded ? "Show less" : "Show more"}
+        </button>
+      )}
     </div>
   );
 }
@@ -941,7 +1076,7 @@ function CopyTooltipDemo() {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
       <button className="btn btn-solid" onClick={onCopy}>
-        {copied ? "Copied!" : "⎘ Copy"}
+        {copied ? "Copied!" : <React.Fragment><Icon name="copy" size={14} style={{ color: "#fff" }} /> Copy</React.Fragment>}
       </button>
       <span className="mono" style={{ fontSize: 13, textDecoration: "underline", textDecorationStyle: "dotted" }}>
         {value}
@@ -1032,7 +1167,7 @@ function SelectControlDemo() {
   return (
     <div style={{ position: "relative" }} ref={ref}>
       <button className="dd-trigger" onClick={() => setOpen(!open)}>
-        🗓️ {val || "Select date..."} <span className="chev">↕</span>
+        <Icon name="calendar" size={14} /> {val || "Select date..."} <Icon name="chevronsUpDown" size={13} className="chev" />
       </button>
       {open && (
         <div className="dd-panel">
@@ -1056,7 +1191,7 @@ function SelectDemo() {
   return (
     <div style={{ position: "relative" }} ref={ref}>
       <button className="dd-trigger" onClick={() => setOpen(!open)}>
-        {val || "Select a fruit..."} <span className="chev">↕</span>
+        {val || "Select a fruit..."} <Icon name="chevronsUpDown" size={13} className="chev" />
       </button>
       {open && (
         <div className="dd-panel">
@@ -1146,7 +1281,7 @@ function MenuDemo() {
   return (
     <div style={{ position: "relative" }} ref={ref}>
       <button className="btn btn-ghost" onClick={() => setOpen(!open)}>
-        Sample menu <span className="chev">⌄</span>
+        Sample menu <Icon name="chevronDown" size={14} className="chev" />
       </button>
       {open && (
         <div className="dd-panel" style={{ minWidth: 210 }}>
@@ -1199,10 +1334,10 @@ function LoadingIndicatorDemo() {
 function EmptyMessageDemo() {
   return (
     <div className="empty-msg">
-      <div className="empty-icon">🧭</div>
+      <div className="empty-icon"><Icon name="compass" size={18} /></div>
       <h3>Your evaluations will appear here</h3>
       <p>Create an evaluation to assess your model's responses</p>
-      <button className="btn btn-solid" style={{ marginTop: 4 }}>+ Create</button>
+      <button className="btn btn-solid" style={{ marginTop: 4 }}><Icon name="plus" size={13} style={{ color: "#fff" }} /> Create</button>
     </div>
   );
 }
@@ -1228,9 +1363,9 @@ function Calendar({ year, month, onPrev, onNext, isSelected, isInRange, onPick }
   return (
     <div className="cal">
       <div className="cal-head">
-        <button onClick={onPrev}>&lsaquo;</button>
+        <button onClick={onPrev}><Icon name="chevronLeft" size={13} /></button>
         <span>{MONTH_NAMES[month]} {year}</span>
-        <button onClick={onNext}>&rsaquo;</button>
+        <button onClick={onNext}><Icon name="chevronRight" size={13} /></button>
       </div>
       <div className="cal-grid">
         {DOW.map((d) => <span className="dow" key={d}>{d}</span>)}
@@ -1272,7 +1407,7 @@ function DatePickerDemo() {
   return (
     <div style={{ position: "relative" }} ref={ref}>
       <button className="dd-trigger" onClick={() => setOpen(!open)}>
-        📅 {label} <span className="chev">↕</span>
+        <Icon name="calendar" size={14} /> {label} <Icon name="chevronsUpDown" size={13} className="chev" />
       </button>
       {open && (
         <div style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", zIndex: 30 }}>
@@ -1341,7 +1476,7 @@ function DateRangePickerDemo() {
   return (
     <div style={{ position: "relative" }} ref={ref}>
       <button className="dd-trigger" onClick={() => setOpen(!open)} style={{ borderColor: open ? "#2563eb" : "#d4d4d8", color: open ? "#2563eb" : "inherit" }}>
-        📅 {label} <span className="chev">↕</span>
+        <Icon name="calendar" size={14} /> {label} <Icon name="chevronsUpDown" size={13} className="chev" />
       </button>
       {open && (
         <div style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", zIndex: 30 }}>
@@ -1372,8 +1507,8 @@ function CodeBlockDemo() {
     setTimeout(() => setCopied(false), 1200);
   }
   return (
-    <div style={{ width: "100%", background: "#fafafa", border: "1px solid var(--border-soft)", borderRadius: 10, padding: "12px 14px", position: "relative" }}>
-      <button className="copy-btn" onClick={onCopy}>{copied ? "Copied" : "⎘"}</button>
+    <div style={{ width: "100%", maxWidth: "100%", maxHeight: "100%", background: "#fafafa", border: "1px solid var(--border-soft)", borderRadius: 10, padding: "12px 14px", position: "relative", overflow: "auto", boxSizing: "border-box" }}>
+      <button className="copy-btn" onClick={onCopy}>{copied ? "Copied" : <Icon name="copy" size={12} />}</button>
       <pre className="mono" style={{ margin: 0, fontSize: 11.5, lineHeight: 1.7 }}>
 <span className="tok-kw">const</span> stream = <span className="tok-kw">await</span> <span className="tok-tag">openai</span>.chat.completions.<span className="tok-attr">create</span>({"{"}
 {"\n  "}model: <span className="tok-str">"gpt-4.1"</span>,
@@ -1392,7 +1527,7 @@ function CheckboxDemo() {
   const [checked, setChecked] = useState(false);
   return (
     <div className="checkbox-item" onClick={() => setChecked(!checked)}>
-      <span className={"checkbox-box" + (checked ? " checked" : "")}>{checked ? "✓" : ""}</span>
+      <span className={"checkbox-box" + (checked ? " checked" : "")}>{checked ? <Icon name="check" size={11} style={{ color: "#fff" }} /> : ""}</span>
       Same as billing address
     </div>
   );
@@ -1404,7 +1539,7 @@ function CheckboxDemo() {
 function ButtonLinkDemo() {
   return (
     <a href="#" onClick={(e) => e.preventDefault()} className="btn btn-solid">
-      View API Keys &rarr;
+      View API Keys <Icon name="arrowRight" size={14} style={{ color: "#fff" }} />
     </a>
   );
 }
@@ -1413,15 +1548,7 @@ function ButtonLinkDemo() {
 /* 23. Button (variants)                                             */
 /* ---------------------------------------------------------------- */
 function ButtonDemo() {
-  return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
-      <button className="btn btn-solid">Submit</button>
-      <button className="btn btn-soft">Cancel</button>
-      <button className="btn btn-danger">🗑️</button>
-      <button className="btn btn-outline">Next &rarr;</button>
-      <button className="btn btn-ghost">⭤ Compare</button>
-    </div>
-  );
+  return <button className="btn btn-solid">Submit</button>;
 }
 
 /* ---------------------------------------------------------------- */
@@ -1429,14 +1556,7 @@ function ButtonDemo() {
 /* ---------------------------------------------------------------- */
 function BadgeDemo() {
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
-      <span className="badge" style={{ color: "var(--success-fg)", background: "var(--success-bg)" }}>Successful</span>
-      <span className="badge" style={{ color: "#52525b", background: "var(--bg-soft)" }}>
-        <span className="spinner" style={{ width: 11, height: 11, borderWidth: 2 }} /> In progress
-      </span>
-      <span className="badge" style={{ color: "var(--danger-fg)", background: "var(--danger-bg)" }}>Failed</span>
-      <span className="badge" style={{ color: "var(--beta-fg)", background: "var(--beta-bg)" }}>⚗️ Beta</span>
-    </div>
+    <span className="badge" style={{ color: "var(--success-fg)", background: "var(--success-bg)" }}>New</span>
   );
 }
 
@@ -1452,7 +1572,7 @@ function AlertDemo() {
   }
   return (
     <div className="alert-box">
-      <span className="alert-icon">i</span>
+      <span className="alert-icon"><Icon name="info" size={13} /></span>
       <div style={{ flex: 1 }}>
         <h4>Scheduled maintenance</h4>
         <p>We'll be offline 2 - 4 AM UTC on July 14 while we upgrade our database.</p>
@@ -1474,7 +1594,7 @@ function AvatarDemo() {
 /* ---------------------------------------------------------------- */
 function AvatarGroupDemo() {
   const colors = ["#fbcfe8", "#bfdbfe", "#ddd6fe"];
-  const labels = ["👤", "W", "🤖"];
+  const labels = [<Icon name="user" size={16} />, "W", <Icon name="bot" size={16} />];
   return (
     <div className="avatar-group">
       {labels.map((l, i) => (
