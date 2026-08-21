@@ -1,0 +1,1630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UI Components Showcase</title>
+<style>
+  :root {
+    --border: #e5e5e5;
+    --border-soft: #eee;
+    --bg-soft: #f4f4f5;
+    --bg-code: #fafafa;
+    --text: #111114;
+    --text-secondary: #6b7280;
+    --accent: #111114;
+    --success-fg: #16a34a;
+    --success-bg: #dcfce7;
+    --danger-fg: #dc2626;
+    --danger-bg: #fee2e2;
+    --beta-fg: #c2410c;
+    --beta-bg: #ffedd5;
+    --primary-blue: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  code, pre, .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  header.page-header {
+    padding: 40px 32px 24px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  header.page-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+  header.page-header p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+
+  .gallery {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 28px 32px 48px;
+    align-items: flex-start;
+    scroll-snap-type: x proximity;
+  }
+  .gallery::-webkit-scrollbar { height: 10px; }
+  .gallery::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+  .gallery::-webkit-scrollbar-track { background: transparent; }
+
+  .card {
+    flex: 0 0 340px;
+    width: 340px;
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-head {
+    padding: 18px 20px 14px;
+  }
+  .card-head h2 {
+    font-size: 19px;
+    font-weight: 800;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .card-head p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .preview {
+    flex: 1;
+    min-height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    position: relative;
+  }
+
+  .code-box {
+    position: relative;
+    background: var(--bg-code);
+    padding: 14px 44px 14px 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-x: auto;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .code-box pre { margin: 0; white-space: pre; }
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .copy-btn:hover { background: #f5f5f5; }
+
+  .tok-tag { color: #7c3aed; }
+  .tok-attr { color: #2563eb; }
+  .tok-str { color: #15803d; }
+  .tok-punct { color: #9ca3af; }
+  .tok-comment { color: #9ca3af; font-style: italic; }
+  .tok-kw { color: #db2777; }
+
+  /* ---------- generic building blocks ---------- */
+
+  .btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .btn-solid { background: #111114; color: #fff; }
+  .btn-solid:hover { background: #000; }
+  .btn-soft { background: var(--bg-soft); color: var(--text); }
+  .btn-soft:hover { background: #e9e9eb; }
+  .btn-outline { background: #fff; color: var(--text); border-color: #d4d4d8; }
+  .btn-outline:hover { background: #fafafa; }
+  .btn-ghost { background: transparent; color: var(--text); }
+  .btn-ghost:hover { background: var(--bg-soft); }
+  .btn-danger { background: #dc2626; color: #fff; border-radius: 10px; padding: 8px 10px; }
+  .btn-danger:hover { background: #b91c1c; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .field-input, .field-textarea {
+    font-family: inherit;
+    font-size: 13.5px;
+    border: 1px solid #d4d4d8;
+    border-radius: 8px;
+    padding: 9px 12px;
+    outline: none;
+    width: 100%;
+    color: var(--text);
+  }
+  .field-input:focus, .field-textarea:focus { border-color: #a1a1aa; }
+  .field-textarea { resize: none; overflow: hidden; }
+
+  /* Tooltip */
+  .tooltip-wrap { position: relative; display: inline-block; }
+  .tooltip-trigger {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    cursor: default;
+    font-size: 14.5px;
+  }
+  .tooltip-bubble {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2023;
+    color: #fff;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    white-space: nowrap;
+    max-width: 220px;
+    white-space: normal;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    z-index: 20;
+  }
+  .tooltip-bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1f2023;
+  }
+
+  /* Switch */
+  .switch {
+    width: 40px;
+    height: 24px;
+    border-radius: 999px;
+    background: #e4e4e7;
+    border: none;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    padding: 0;
+  }
+  .switch.on { background: #111114; }
+  .switch .knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    transition: transform 0.15s ease;
+  }
+  .switch.on .knob { transform: translateX(16px); }
+
+  /* Slider */
+  .slider-wrap { width: 100%; }
+  .slider-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 13.5px; }
+  .slider-row .val { color: var(--text-secondary); font-size: 12.5px; }
+  input[type="range"] {
+    width: 100%;
+    accent-color: #111114;
+    cursor: pointer;
+  }
+
+  /* Select / SelectControl / Menu / DatePicker shared dropdown trigger */
+  .dd-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #d4d4d8;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13.5px;
+    background: #fff;
+    cursor: pointer;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .dd-trigger:hover { background: #fafafa; }
+  .dd-trigger .chev { color: #9ca3af; font-size: 10px; margin-left: 2px; }
+  .dd-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    min-width: 180px;
+    z-index: 30;
+    padding: 6px;
+  }
+  .dd-item {
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    display: block;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .dd-item:hover { background: var(--bg-soft); }
+  .dd-item.disabled { color: #b7b7bb; cursor: not-allowed; }
+  .dd-item.disabled:hover { background: transparent; }
+  .dd-sep { height: 1px; background: var(--border-soft); margin: 6px 2px; }
+
+  /* SegmentedControl */
+  .segmented {
+    display: inline-flex;
+    background: var(--bg-soft);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .segmented button {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: #71717a;
+  }
+  .segmented button.active {
+    background: #fff;
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+
+  /* RadioGroup */
+  .radio-group { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+  .radio-item { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 14px; }
+  .radio-dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid #c4c4c9;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .radio-dot.checked { border-color: #111114; }
+  .radio-dot.checked::after {
+    content: "";
+    width: 9px; height: 9px; border-radius: 50%; background: #111114;
+  }
+
+  /* Checkbox */
+  .checkbox-item { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 14px; }
+  .checkbox-box {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 1.5px solid #c4c4c9;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: #fff; font-size: 12px; font-weight: 800;
+  }
+  .checkbox-box.checked { background: #111114; border-color: #111114; }
+
+  /* TagInput */
+  .tag-input-wrap {
+    width: 100%;
+    border: 1px solid #d4d4d8;
+    border-radius: 10px;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 90px;
+    align-content: flex-start;
+  }
+  .tag-chip {
+    background: var(--bg-soft);
+    border-radius: 6px;
+    padding: 3px 6px 3px 9px;
+    font-size: 12.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tag-chip button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0;
+  }
+  .tag-input-wrap input {
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 13px;
+    flex: 1;
+    min-width: 90px;
+  }
+
+  /* LoadingIndicator */
+  .spinner {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 2.5px solid #e4e4e7;
+    border-top-color: #16a34a;
+    animation: spin 0.7s linear infinite;
+  }
+  .spinner.mono { border-top-color: #111114; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* EmptyMessage */
+  .empty-msg { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .empty-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--bg-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .empty-msg h3 { margin: 0; font-size: 15px; font-weight: 700; }
+  .empty-msg p { margin: 0; font-size: 13px; color: var(--text-secondary); max-width: 240px; }
+
+  /* DatePicker calendar */
+  .cal {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    padding: 10px 12px 14px;
+    width: 230px;
+  }
+  .cal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13px; font-weight: 700; margin-bottom: 8px;
+  }
+  .cal-head button { border: none; background: transparent; cursor: pointer; color: #9ca3af; font-size: 13px; padding: 2px 6px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+  .cal-grid .dow { font-size: 10.5px; color: #9ca3af; font-weight: 600; padding-bottom: 4px; }
+  .cal-day {
+    font-size: 12px; padding: 6px 0; border-radius: 6px; cursor: pointer; background: none; border: none;
+    font-family: inherit; color: var(--text);
+  }
+  .cal-day:hover { background: var(--bg-soft); }
+  .cal-day.selected { background: #111114; color: #fff; }
+  .cal-day.in-range { background: #f0f0f2; }
+  .cal-day.empty { visibility: hidden; }
+
+  /* Popover */
+  .popover-panel {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 10px);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+    padding: 12px;
+    width: 220px;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Alert */
+  .alert-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    width: 100%;
+  }
+  .alert-icon {
+    width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #111114;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .alert-box h4 { margin: 0 0 3px; font-size: 13.5px; font-weight: 700; }
+  .alert-box p { margin: 0; font-size: 12.5px; color: var(--text-secondary); line-height: 1.4; }
+
+  /* Avatar */
+  .avatar {
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #52525b; background: var(--bg-soft);
+    flex-shrink: 0; overflow: hidden;
+  }
+  .avatar-group { display: flex; }
+  .avatar-group .avatar { border: 2px solid #fff; margin-left: -10px; }
+  .avatar-group .avatar:first-child { margin-left: 0; }
+
+  /* Markdown sample */
+  .md-sample h1 { font-size: 20px; margin: 0 0 6px; }
+  .md-sample h2 { font-size: 16px; margin: 10px 0 4px; }
+  .md-sample p { font-size: 12.5px; margin: 4px 0; color: #27272a; line-height: 1.5; }
+
+  footer.page-footer {
+    padding: 24px 32px 48px;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+  }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<script src="vendor/babel.min.js"></script>
+
+<script type="text/babel-jsx" id="app-source">
+const { useState, useRef, useEffect } = React;
+
+/* ---------------------------------------------------------------- */
+/* Shared building blocks                                            */
+/* ---------------------------------------------------------------- */
+
+function useOutsideClose(open, setOpen) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    function onDoc(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open, setOpen]);
+  return ref;
+}
+
+function CodeBox({ code }) {
+  const [copied, setCopied] = useState(false);
+  function onCopy() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(code).catch(() => {});
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  }
+  return (
+    <div className="code-box">
+      <button className="copy-btn" onClick={onCopy}>{copied ? "Copied" : "Copy"}</button>
+      <pre>{code}</pre>
+    </div>
+  );
+}
+
+function ShowcaseCard({ title, desc, children, code }) {
+  return (
+    <div className="card">
+      <div className="card-head">
+        <h2>{title}</h2>
+        <p>{desc}</p>
+      </div>
+      <div className="preview">{children}</div>
+      <CodeBox code={code} />
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 1. Tooltip                                                        */
+/* ---------------------------------------------------------------- */
+function TooltipDemo() {
+  const [show, setShow] = useState(false);
+  return (
+    <span
+      className="tooltip-wrap"
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+      onFocus={() => setShow(true)}
+      onBlur={() => setShow(false)}
+      tabIndex={0}
+    >
+      <span className="tooltip-trigger">Simple text with tooltip</span>
+      {show && (
+        <span className="tooltip-bubble">
+          This is additional context that appears when the trigger is hovered or focused
+        </span>
+      )}
+    </span>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 2. Textarea (auto-resize)                                         */
+/* ---------------------------------------------------------------- */
+function TextareaDemo() {
+  const ref = useRef(null);
+  const [val, setVal] = useState("");
+  function onChange(e) {
+    setVal(e.target.value);
+    const el = ref.current;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+  return (
+    <div style={{ width: "100%" }}>
+      <textarea
+        ref={ref}
+        className="field-textarea"
+        placeholder="Enter text..."
+        rows={3}
+        value={val}
+        onChange={onChange}
+      />
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 3. TextLink                                                       */
+/* ---------------------------------------------------------------- */
+function TextLinkDemo() {
+  return (
+    <p style={{ fontSize: 13.5, lineHeight: 1.6, margin: 0 }}>
+      You can use the{" "}
+      <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "inherit", textDecoration: "underline" }}>
+        responses endpoint
+      </a>{" "}
+      to generate text, or use one of OpenAI's{" "}
+      <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "inherit", textDecoration: "underline" }}>
+        official SDKs
+      </a>{" "}
+      for your preferred language.
+    </p>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 4. CopyTooltip                                                    */
+/* ---------------------------------------------------------------- */
+function CopyTooltipDemo() {
+  const [copied, setCopied] = useState(false);
+  const value = "sess_12345abcdefg";
+  function onCopy() {
+    if (navigator.clipboard) navigator.clipboard.writeText(value).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  }
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+      <button className="btn btn-solid" onClick={onCopy}>
+        {copied ? "Copied!" : "⎘ Copy"}
+      </button>
+      <span className="mono" style={{ fontSize: 13, textDecoration: "underline", textDecorationStyle: "dotted" }}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 5. TagInput                                                       */
+/* ---------------------------------------------------------------- */
+function TagInputDemo() {
+  const [tags, setTags] = useState([]);
+  const [val, setVal] = useState("");
+  function onKeyDown(e) {
+    if (e.key === "Enter" && val.trim()) {
+      e.preventDefault();
+      setTags([...tags, val.trim()]);
+      setVal("");
+    } else if (e.key === "Backspace" && !val && tags.length) {
+      setTags(tags.slice(0, -1));
+    }
+  }
+  function removeTag(i) {
+    setTags(tags.filter((_, idx) => idx !== i));
+  }
+  return (
+    <div className="tag-input-wrap">
+      {tags.map((t, i) => (
+        <span className="tag-chip" key={i}>
+          {t}
+          <button onClick={() => removeTag(i)}>&times;</button>
+        </span>
+      ))}
+      <input
+        placeholder={tags.length ? "" : "example@openai.com"}
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        onKeyDown={onKeyDown}
+      />
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 6. Switch                                                         */
+/* ---------------------------------------------------------------- */
+function SwitchDemo() {
+  const [on, setOn] = useState(false);
+  return (
+    <button className={"switch" + (on ? " on" : "")} onClick={() => setOn(!on)} aria-pressed={on}>
+      <span className="knob" />
+    </button>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 7. Slider                                                         */
+/* ---------------------------------------------------------------- */
+function SliderDemo() {
+  const [val, setVal] = useState(1000);
+  return (
+    <div className="slider-wrap">
+      <div className="slider-row">
+        <span>Example field</span>
+        <span className="val">{val}&nbsp;ms</span>
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={2000}
+        step={10}
+        value={val}
+        onChange={(e) => setVal(Number(e.target.value))}
+      />
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 8. SelectControl (custom floating trigger)                        */
+/* ---------------------------------------------------------------- */
+function SelectControlDemo() {
+  const [open, setOpen] = useState(false);
+  const [val, setVal] = useState("");
+  const ref = useOutsideClose(open, setOpen);
+  const dates = ["Aug 1, 2026", "Aug 15, 2026", "Sep 1, 2026"];
+  return (
+    <div style={{ position: "relative" }} ref={ref}>
+      <button className="dd-trigger" onClick={() => setOpen(!open)}>
+        🗓️ {val || "Select date..."} <span className="chev">↕</span>
+      </button>
+      {open && (
+        <div className="dd-panel">
+          {dates.map((d) => (
+            <div key={d} className="dd-item" onClick={() => { setVal(d); setOpen(false); }}>{d}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 9. Select                                                         */
+/* ---------------------------------------------------------------- */
+function SelectDemo() {
+  const [open, setOpen] = useState(false);
+  const [val, setVal] = useState("");
+  const ref = useOutsideClose(open, setOpen);
+  const fruits = ["Apple", "Banana", "Mango", "Papaya"];
+  return (
+    <div style={{ position: "relative" }} ref={ref}>
+      <button className="dd-trigger" onClick={() => setOpen(!open)}>
+        {val || "Select a fruit..."} <span className="chev">↕</span>
+      </button>
+      {open && (
+        <div className="dd-panel">
+          {fruits.map((f) => (
+            <div key={f} className="dd-item" onClick={() => { setVal(f); setOpen(false); }}>{f}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 10. SegmentedControl                                              */
+/* ---------------------------------------------------------------- */
+function SegmentedControlDemo() {
+  const [val, setVal] = useState("all");
+  const options = [
+    ["all", "All"],
+    ["failed", "Failed"],
+    ["successful", "Successful"],
+  ];
+  return (
+    <div className="segmented">
+      {options.map(([v, label]) => (
+        <button key={v} className={val === v ? "active" : ""} onClick={() => setVal(v)}>
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 11. RadioGroup                                                    */
+/* ---------------------------------------------------------------- */
+function RadioGroupDemo() {
+  const [val, setVal] = useState("daily");
+  const options = [
+    ["daily", "Daily"],
+    ["weekly", "Weekly"],
+    ["monthly", "Monthly"],
+    ["never", "Never"],
+  ];
+  return (
+    <div>
+      <h3 style={{ fontSize: 13, fontWeight: 700, margin: "0 0 12px" }}>Notification frequency</h3>
+      <div className="radio-group">
+        {options.map(([v, label]) => (
+          <div key={v} className="radio-item" onClick={() => setVal(v)}>
+            <span className={"radio-dot" + (val === v ? " checked" : "")} />
+            {label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 12. Popover                                                       */
+/* ---------------------------------------------------------------- */
+function PopoverDemo() {
+  const [open, setOpen] = useState(false);
+  const ref = useOutsideClose(open, setOpen);
+  return (
+    <div style={{ position: "relative" }} ref={ref}>
+      <button className="btn btn-solid" onClick={() => setOpen(!open)}>Generate</button>
+      {open && (
+        <div className="popover-panel">
+          <textarea className="field-textarea" rows={3} placeholder="Enter a prompt..." />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 6 }}>
+            <button className="btn btn-soft" style={{ padding: "5px 12px", fontSize: 12 }} onClick={() => setOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 13. Menu                                                           */
+/* ---------------------------------------------------------------- */
+function MenuDemo() {
+  const [open, setOpen] = useState(false);
+  const ref = useOutsideClose(open, setOpen);
+  return (
+    <div style={{ position: "relative" }} ref={ref}>
+      <button className="btn btn-ghost" onClick={() => setOpen(!open)}>
+        Sample menu <span className="chev">⌄</span>
+      </button>
+      {open && (
+        <div className="dd-panel" style={{ minWidth: 210 }}>
+          <div className="dd-item" style={{ cursor: "default" }}>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: 13 }}>Sam Smith</p>
+            <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)" }}>sam.smith@gmail.com</p>
+          </div>
+          <div className="dd-sep" />
+          <a className="dd-item" href="#" onClick={(e) => { e.preventDefault(); setOpen(false); }}>Your profile</a>
+          <a className="dd-item" href="#" onClick={(e) => { e.preventDefault(); setOpen(false); }}>Terms &amp; policies</a>
+          <div className="dd-item disabled">Feature flags</div>
+          <div className="dd-sep" />
+          <div className="dd-item" onClick={() => setOpen(false)}>Logout</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 14. Markdown                                                      */
+/* ---------------------------------------------------------------- */
+function MarkdownDemo() {
+  return (
+    <div className="md-sample" style={{ width: "100%" }}>
+      <h1>Heading 1</h1>
+      <h2>Heading 2</h2>
+      <p><em>Emphasis</em> with asterisks, <strong>strong emphasis</strong>, and <s>strikethrough</s>.</p>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 15. Input                                                         */
+/* ---------------------------------------------------------------- */
+function InputDemo() {
+  return <input className="field-input" placeholder="Enter text..." style={{ maxWidth: 220 }} />;
+}
+
+/* ---------------------------------------------------------------- */
+/* 16. LoadingIndicator                                              */
+/* ---------------------------------------------------------------- */
+function LoadingIndicatorDemo() {
+  return <div className="spinner mono" />;
+}
+
+/* ---------------------------------------------------------------- */
+/* 17. EmptyMessage                                                  */
+/* ---------------------------------------------------------------- */
+function EmptyMessageDemo() {
+  return (
+    <div className="empty-msg">
+      <div className="empty-icon">🧭</div>
+      <h3>Your evaluations will appear here</h3>
+      <p>Create an evaluation to assess your model's responses</p>
+      <button className="btn btn-solid" style={{ marginTop: 4 }}>+ Create</button>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 18/19. DatePicker & DateRangePicker (shared calendar)             */
+/* ---------------------------------------------------------------- */
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+
+function buildMonthGrid(year, month) {
+  const first = new Date(year, month, 1);
+  const startOffset = first.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < startOffset; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  return cells;
+}
+
+function Calendar({ year, month, onPrev, onNext, isSelected, isInRange, onPick }) {
+  const cells = buildMonthGrid(year, month);
+  return (
+    <div className="cal">
+      <div className="cal-head">
+        <button onClick={onPrev}>&lsaquo;</button>
+        <span>{MONTH_NAMES[month]} {year}</span>
+        <button onClick={onNext}>&rsaquo;</button>
+      </div>
+      <div className="cal-grid">
+        {DOW.map((d) => <span className="dow" key={d}>{d}</span>)}
+        {cells.map((d, i) => {
+          if (d === null) return <span className="cal-day empty" key={i} />;
+          const selected = isSelected(d);
+          const inRange = isInRange && isInRange(d);
+          return (
+            <button
+              key={i}
+              className={"cal-day" + (selected ? " selected" : "") + (inRange && !selected ? " in-range" : "")}
+              onClick={() => onPick(d)}
+            >
+              {d}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DatePickerDemo() {
+  const [open, setOpen] = useState(false);
+  const [year, setYear] = useState(2026);
+  const [month, setMonth] = useState(7); // August
+  const [selected, setSelected] = useState(null);
+  const ref = useOutsideClose(open, setOpen);
+
+  function shiftMonth(delta) {
+    let m = month + delta, y = year;
+    if (m < 0) { m = 11; y -= 1; }
+    if (m > 11) { m = 0; y += 1; }
+    setMonth(m); setYear(y);
+  }
+
+  const label = selected ? `${MONTH_NAMES[selected.m].slice(0,3)} ${selected.d}, ${selected.y}` : "Select date...";
+
+  return (
+    <div style={{ position: "relative" }} ref={ref}>
+      <button className="dd-trigger" onClick={() => setOpen(!open)}>
+        📅 {label} <span className="chev">↕</span>
+      </button>
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", zIndex: 30 }}>
+          <Calendar
+            year={year}
+            month={month}
+            onPrev={() => shiftMonth(-1)}
+            onNext={() => shiftMonth(1)}
+            isSelected={(d) => selected && selected.d === d && selected.m === month && selected.y === year}
+            onPick={(d) => { setSelected({ d, m: month, y: year }); setOpen(false); }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DateRangePickerDemo() {
+  const [open, setOpen] = useState(false);
+  const [year, setYear] = useState(2026);
+  const [month, setMonth] = useState(7);
+  const [start, setStart] = useState(null);
+  const [end, setEnd] = useState(null);
+  const ref = useOutsideClose(open, setOpen);
+
+  function shiftMonth(delta) {
+    let m = month + delta, y = year;
+    if (m < 0) { m = 11; y -= 1; }
+    if (m > 11) { m = 0; y += 1; }
+    setMonth(m); setYear(y);
+  }
+
+  function pick(d) {
+    const point = { d, m: month, y: year };
+    if (!start || (start && end)) {
+      setStart(point);
+      setEnd(null);
+    } else {
+      const startVal = new Date(start.y, start.m, start.d).getTime();
+      const thisVal = new Date(point.y, point.m, point.d).getTime();
+      if (thisVal < startVal) {
+        setEnd(start);
+        setStart(point);
+      } else {
+        setEnd(point);
+        setOpen(false);
+      }
+    }
+  }
+
+  function toTime(p) { return p ? new Date(p.y, p.m, p.d).getTime() : null; }
+
+  function isSelected(d) {
+    const t = new Date(year, month, d).getTime();
+    return t === toTime(start) || t === toTime(end);
+  }
+  function isInRange(d) {
+    if (!start || !end) return false;
+    const t = new Date(year, month, d).getTime();
+    return t > toTime(start) && t < toTime(end);
+  }
+
+  function fmt(p) { return p ? `${MONTH_NAMES[p.m].slice(0,3)} ${p.d}` : ""; }
+  const label = start ? (end ? `${fmt(start)} – ${fmt(end)}` : `${fmt(start)} – ...`) : "Select date range...";
+
+  return (
+    <div style={{ position: "relative" }} ref={ref}>
+      <button className="dd-trigger" onClick={() => setOpen(!open)} style={{ borderColor: open ? "#2563eb" : "#d4d4d8", color: open ? "#2563eb" : "inherit" }}>
+        📅 {label} <span className="chev">↕</span>
+      </button>
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", zIndex: 30 }}>
+          <Calendar
+            year={year}
+            month={month}
+            onPrev={() => shiftMonth(-1)}
+            onNext={() => shiftMonth(1)}
+            isSelected={isSelected}
+            isInRange={isInRange}
+            onPick={pick}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 20. CodeBlock (syntax-ish highlighting)                           */
+/* ---------------------------------------------------------------- */
+function CodeBlockDemo() {
+  const [copied, setCopied] = useState(false);
+  const raw = 'const stream = await openai.chat.completions.create({\n  model: "gpt-4.1",\n  messages: [{ role: "user", content: "Hi" }],\n  stream: true,\n});';
+  function onCopy() {
+    if (navigator.clipboard) navigator.clipboard.writeText(raw).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  }
+  return (
+    <div style={{ width: "100%", background: "#fafafa", border: "1px solid var(--border-soft)", borderRadius: 10, padding: "12px 14px", position: "relative" }}>
+      <button className="copy-btn" onClick={onCopy}>{copied ? "Copied" : "⎘"}</button>
+      <pre className="mono" style={{ margin: 0, fontSize: 11.5, lineHeight: 1.7 }}>
+<span className="tok-kw">const</span> stream = <span className="tok-kw">await</span> <span className="tok-tag">openai</span>.chat.completions.<span className="tok-attr">create</span>({"{"}
+{"\n  "}model: <span className="tok-str">"gpt-4.1"</span>,
+{"\n  "}messages: [{"{"} role: <span className="tok-str">"user"</span>, content: <span className="tok-str">"Hi"</span> {"}"}],
+{"\n  "}stream: <span className="tok-kw">true</span>,
+{"\n"}{"}"});
+      </pre>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 21. Checkbox                                                      */
+/* ---------------------------------------------------------------- */
+function CheckboxDemo() {
+  const [checked, setChecked] = useState(false);
+  return (
+    <div className="checkbox-item" onClick={() => setChecked(!checked)}>
+      <span className={"checkbox-box" + (checked ? " checked" : "")}>{checked ? "✓" : ""}</span>
+      Same as billing address
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 22. ButtonLink                                                    */
+/* ---------------------------------------------------------------- */
+function ButtonLinkDemo() {
+  return (
+    <a href="#" onClick={(e) => e.preventDefault()} className="btn btn-solid">
+      View API Keys &rarr;
+    </a>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 23. Button (variants)                                             */
+/* ---------------------------------------------------------------- */
+function ButtonDemo() {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
+      <button className="btn btn-solid">Submit</button>
+      <button className="btn btn-soft">Cancel</button>
+      <button className="btn btn-danger">🗑️</button>
+      <button className="btn btn-outline">Next &rarr;</button>
+      <button className="btn btn-ghost">⭤ Compare</button>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 24. Badge                                                         */
+/* ---------------------------------------------------------------- */
+function BadgeDemo() {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
+      <span className="badge" style={{ color: "var(--success-fg)", background: "var(--success-bg)" }}>Successful</span>
+      <span className="badge" style={{ color: "#52525b", background: "var(--bg-soft)" }}>
+        <span className="spinner" style={{ width: 11, height: 11, borderWidth: 2 }} /> In progress
+      </span>
+      <span className="badge" style={{ color: "var(--danger-fg)", background: "var(--danger-bg)" }}>Failed</span>
+      <span className="badge" style={{ color: "var(--beta-fg)", background: "var(--beta-bg)" }}>⚗️ Beta</span>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 25. Alert                                                         */
+/* ---------------------------------------------------------------- */
+function AlertDemo() {
+  const [visible, setVisible] = useState(true);
+  if (!visible) {
+    return (
+      <button className="btn btn-outline" onClick={() => setVisible(true)}>Show alert again</button>
+    );
+  }
+  return (
+    <div className="alert-box">
+      <span className="alert-icon">i</span>
+      <div style={{ flex: 1 }}>
+        <h4>Scheduled maintenance</h4>
+        <p>We'll be offline 2 - 4 AM UTC on July 14 while we upgrade our database.</p>
+      </div>
+      <button className="btn btn-soft" style={{ padding: "5px 12px", fontSize: 12 }} onClick={() => setVisible(false)}>Dismiss</button>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* 26. Avatar                                                        */
+/* ---------------------------------------------------------------- */
+function AvatarDemo() {
+  return <div className="avatar" style={{ width: 48, height: 48, fontSize: 17 }}>J</div>;
+}
+
+/* ---------------------------------------------------------------- */
+/* 27. AvatarGroup                                                   */
+/* ---------------------------------------------------------------- */
+function AvatarGroupDemo() {
+  const colors = ["#fbcfe8", "#bfdbfe", "#ddd6fe"];
+  const labels = ["👤", "W", "🤖"];
+  return (
+    <div className="avatar-group">
+      {labels.map((l, i) => (
+        <div key={i} className="avatar" style={{ width: 42, height: 42, fontSize: 15, background: colors[i] }}>{l}</div>
+      ))}
+      <div className="avatar" style={{ width: 42, height: 42, fontSize: 13, background: "#dcfce7", color: "#16a34a" }}>+5</div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* Data-driven component list                                        */
+/* ---------------------------------------------------------------- */
+
+const COMPONENTS = [
+  {
+    title: "Tooltip",
+    desc: "Brief and informative hover text",
+    Preview: TooltipDemo,
+    code:
+`import { Tooltip } from "@openai/apps-sdk-ui/components/Tooltip";
+
+<Tooltip content="This is additional context that appears when the trigger is hovered or focused">
+  <Tooltip.TriggerDecorator>
+    Simple text with tooltip
+  </Tooltip.TriggerDecorator>
+</Tooltip>`,
+  },
+  {
+    title: "Textarea",
+    desc: "Semantic multi-line text input collection",
+    Preview: TextareaDemo,
+    code:
+`import { Textarea } from "@openai/apps-sdk-ui/components/Textarea";
+
+<Textarea
+  autoResize
+  placeholder="Enter text..."
+  rows={3}
+/>`,
+  },
+  {
+    title: "TextLink",
+    desc: "Semantic link used for both internal and external links",
+    Preview: TextLinkDemo,
+    code:
+`import { TextLink } from "@openai/apps-sdk-ui/components/TextLink"
+
+<p>
+  You can use the{' '}
+  <TextLink href="#">responses endpoint</TextLink>{' '}
+  to generate text, or use one of OpenAI's{' '}
+  <TextLink href="#">official SDKs</TextLink>{' '}
+  for your preferred language.
+</p>`,
+  },
+  {
+    title: "CopyTooltip",
+    desc: "Allow users to easily copy to clipboard",
+    Preview: CopyTooltipDemo,
+    code:
+`import { CopyTooltip } from "@openai/apps-sdk-ui/components/Tooltip";
+
+<CopyTooltip copyValue="Very cool content to copy">
+  <Tooltip.TriggerDecorator>
+    sess_12345abcdefg
+  </Tooltip.TriggerDecorator>
+</CopyTooltip>`,
+  },
+  {
+    title: "TagInput",
+    desc: "Enter multiple unique tags",
+    Preview: TagInputDemo,
+    code:
+`import { TagInput } from "@openai/apps-sdk-ui/components/TagInput";
+
+<TagInput
+  autoFocus
+  placeholder="example@openai.com"
+  rows={3}
+  validator={function Xs(){}}
+/>`,
+  },
+  {
+    title: "Switch",
+    desc: "Toggle control for on and off states",
+    Preview: SwitchDemo,
+    code:
+`import { Switch } from "@openai/apps-sdk-ui/components/Switch";
+
+<Switch />`,
+  },
+  {
+    title: "Slider",
+    desc: "Fine-tune values within a set range",
+    Preview: SliderDemo,
+    code:
+`import { Slider } from "@openai/apps-sdk-ui/components/Slider";
+
+<Slider
+  label="Example field"
+  max={2000}
+  min={0}
+  onChange={function Xs(){}}
+  resetValue={1000}
+  step={10}
+  unit="ms"
+  value={1000}
+/>`,
+  },
+  {
+    title: "SelectControl",
+    desc: "Customizable select control for use with any type of floating UI",
+    Preview: SelectControlDemo,
+    code:
+`import { SelectControl } from "@openai/apps-sdk-ui/components/SelectControl";
+
+<Menu>
+  <Menu.Trigger>
+    <SelectControl
+      selected={!!value}
+      onClearClick={() => setValue("")}
+      StartIcon={CalendarAlt}
+    >
+      {value || placeholder}
+    </SelectControl>
+  </Menu.Trigger>
+  <Menu.Content>
+    <Menu.RadioGroup value={value} onChange={setValue}>
+      ...
+    </Menu.RadioGroup>
+  </Menu.Content>
+</Menu>`,
+  },
+  {
+    title: "Select",
+    desc: "Choose from a dropdown of options",
+    Preview: SelectDemo,
+    code:
+`import { Select } from "@openai/apps-sdk-ui/components/Select";
+
+<Select
+  value={fruit}
+  options={fruits}
+  onChange={handleChange}
+  placeholder="Select a fruit..."
+  variant="solid"
+/>`,
+  },
+  {
+    title: "SegmentedControl",
+    desc: "Toggle through grouped options",
+    Preview: SegmentedControlDemo,
+    code:
+`import { SegmentedControl } from "@openai/apps-sdk-ui/components/SegmentedControl";
+
+<SegmentedControl
+  aria-label="Select view"
+  onChange={function Xs(){}}
+  value="all"
+>
+  <SegmentedControl.Option value="all">All</SegmentedControl.Option>
+  <SegmentedControl.Option value="failed">Failed</SegmentedControl.Option>
+  <SegmentedControl.Option value="successful">Successful</SegmentedControl.Option>
+</SegmentedControl>`,
+  },
+  {
+    title: "RadioGroup",
+    desc: "Semantic radio option selection",
+    Preview: RadioGroupDemo,
+    code:
+`import { RadioGroup } from "@/components/ui/RadioGroup";
+
+const [frequency, setFrequency] = useState("daily");
+
+<RadioGroup direction="col" value={frequency} onChange={setFrequency} aria-label="Notification frequency">
+  <RadioGroup.Item value="daily">Daily</RadioGroup.Item>
+  <RadioGroup.Item value="weekly">Weekly</RadioGroup.Item>
+  <RadioGroup.Item value="monthly">Monthly</RadioGroup.Item>
+  <RadioGroup.Item value="never">Never</RadioGroup.Item>
+</RadioGroup>`,
+  },
+  {
+    title: "Popover",
+    desc: "Generic floating UI utility for contextual actions",
+    Preview: PopoverDemo,
+    code:
+`import { Popover } from "@openai/apps-sdk-ui/components/Popover";
+
+<Popover>
+  <Popover.Trigger>
+    <Button color="primary">Generate</Button>
+  </Popover.Trigger>
+  <Popover.Content side="right">
+    <Textarea />
+    <ActionBar />
+  </Popover.Content>
+</Popover>`,
+  },
+  {
+    title: "Menu",
+    desc: "Structured actions in a dropdown list",
+    Preview: MenuDemo,
+    code:
+`import { Menu } from "@openai/apps-sdk-ui/components/Menu"
+
+<Menu>
+  <Menu.Trigger>
+    <Button color="primary" size="lg" variant="ghost">
+      Sample menu <ChevronDown />
+    </Button>
+  </Menu.Trigger>
+  <Menu.Content width={210} minWidth={210}>
+    <Menu.Item>
+      <p className="font-semibold">Sam Smith</p>
+      <p className="text-secondary">sam.smith@gmail.com</p>
+    </Menu.Item>
+    <Menu.Separator />
+    <Menu.Link href="/settings">Your profile</Menu.Link>
+    <Menu.Link href="https://openai.com/policies/">Terms & policies</Menu.Link>
+    <Menu.Item disabled onSelect={() => {}}>Feature flags</Menu.Item>
+    <Menu.Separator />
+    <Menu.Item onSelect={() => {}}>Logout</Menu.Item>
+  </Menu.Content>
+</Menu>`,
+  },
+  {
+    title: "Markdown",
+    desc: "Render rich formatted content",
+    Preview: MarkdownDemo,
+    code:
+`import { Markdown } from "@openai/apps-sdk-ui/components/Markdown"
+
+<Markdown>
+{\`# Heading 1
+## Heading 2
+
+*Emphasis*, **strong emphasis**, ~~strikethrough~~.\`}
+</Markdown>`,
+  },
+  {
+    title: "Input",
+    desc: "Semantic input text collection",
+    Preview: InputDemo,
+    code:
+`import { Input } from "@openai/apps-sdk-ui/components/Input";
+
+<Input
+  placeholder="Enter text..."
+/>`,
+  },
+  {
+    title: "LoadingIndicator",
+    desc: "Simple spinning indicator for general loading states",
+    Preview: LoadingIndicatorDemo,
+    code:
+`import { LoadingIndicator } from "@openai/apps-sdk-ui/components/Indicator";
+
+<LoadingIndicator size={24} />`,
+  },
+  {
+    title: "EmptyMessage",
+    desc: "Gracefully inform users when there's nothing to see",
+    Preview: EmptyMessageDemo,
+    code:
+`import { EmptyMessage } from "@openai/apps-sdk-ui/components/EmptyMessage"
+
+<EmptyMessage>
+  <EmptyMessage.Icon>
+    <Explore />
+  </EmptyMessage.Icon>
+  <EmptyMessage.Title>Your evaluations will appear here</EmptyMessage.Title>
+  <EmptyMessage.Description>
+    Create an evaluation to assess your model's responses
+  </EmptyMessage.Description>
+  <EmptyMessage.ActionRow>
+    <Button color="primary" onClick={() => {}} size="lg">
+      <Plus className="mr-[-2px]" />
+      Create
+    </Button>
+  </EmptyMessage.ActionRow>
+</EmptyMessage>`,
+  },
+  {
+    title: "DateRangePicker",
+    desc: "Select a date range with an interactive calendar",
+    Preview: DateRangePickerDemo,
+    code:
+`import { DateRangePicker } from "@openai/apps-sdk-ui/components/DateRangePicker";
+
+<DateRangePicker
+  value={selectedDateRange}
+  onChange={(nextDateRange) => {
+    setSelectedDateRange(nextDateRange);
+  }}
+  shortcuts={dayShortcuts}
+  clearable
+  pill
+/>`,
+  },
+  {
+    title: "DatePicker",
+    desc: "Select a single date with an interactive calendar",
+    Preview: DatePickerDemo,
+    code:
+`import { DatePicker } from "@openai/apps-sdk-ui/components/DatePicker";
+
+<DatePicker
+  value={selectedDate}
+  onChange={(nextDate) => {
+    setSelectedDate(nextDate);
+  }}
+  clearable
+  pill
+/>`,
+  },
+  {
+    title: "CodeBlock",
+    desc: "Display syntax-highlighted code snippets",
+    Preview: CodeBlockDemo,
+    code:
+`import { CodeBlock } from "@openai/apps-sdk-ui/components/CodeBlock";
+
+const codeSnippet = '...'
+
+return (
+  <CodeBlock language="javascript">{codeSnippet}</CodeBlock>
+)`,
+  },
+  {
+    title: "Checkbox",
+    desc: "Toggle control for on and off states",
+    Preview: CheckboxDemo,
+    code:
+`import { Checkbox } from "@openai/apps-sdk-ui/components/Checkbox";
+
+<Checkbox
+  label="Same as billing address"
+/>`,
+  },
+  {
+    title: "ButtonLink",
+    desc: "Semantic link styled as a button",
+    Preview: ButtonLinkDemo,
+    code:
+`import { ButtonLink } from "@openai/apps-sdk-ui/components/Button";
+
+<ButtonLink
+  color="primary"
+  href="https://platform.openai.com"
+>
+  View API Keys
+  <ArrowRight />
+</ButtonLink>`,
+  },
+  {
+    title: "Button",
+    desc: "Create actions in many different styles",
+    Preview: ButtonDemo,
+    code:
+`import { Button } from "@openai/apps-sdk-ui/components/Button";
+
+<Button
+  color="primary"
+  size="md"
+  variant="solid"
+>
+  Submit
+</Button>`,
+  },
+  {
+    title: "Badge",
+    desc: "Emphasize details with a status indicator",
+    Preview: BadgeDemo,
+    code:
+`import { Badge } from "@openai/apps-sdk-ui/components/Badge";
+
+<Badge
+  color="success"
+  size="md"
+>
+  New
+</Badge>`,
+  },
+  {
+    title: "Alert",
+    desc: "Call attention to a specific message or warning",
+    Preview: AlertDemo,
+    code:
+`import { Alert } from "@openai/apps-sdk-ui/components/Alert";
+
+<Alert
+  actions={<Button color="primary" pill variant="soft">Dismiss</Button>}
+  description="We'll be offline 2 - 4 AM UTC on July 14 while we upgrade our database."
+  title="Scheduled maintenance"
+/>`,
+  },
+  {
+    title: "Avatar",
+    desc: "Display user identities with either text, photo, or an icon",
+    Preview: AvatarDemo,
+    code:
+`import { Avatar } from "@openai/apps-sdk-ui/components/Avatar";
+
+<Avatar
+  name="Jane"
+  size={48}
+/>`,
+  },
+  {
+    title: "AvatarGroup",
+    desc: "Display avatars as a single stack",
+    Preview: AvatarGroupDemo,
+    code:
+`import { AvatarGroup } from "@openai/apps-sdk-ui/components/Avatar";
+
+<AvatarGroup size={42}>
+  <Avatar name="Tyler" imageUrl="https://gravatar.com/avatar/xyz" />
+  <Avatar name="Jane" color="primary" variant="solid" />
+  <Avatar name="Tech support" Icon={Robot} variant="solid" />
+  <Avatar overflowCount={5} />
+</AvatarGroup>`,
+  },
+];
+
+/* ---------------------------------------------------------------- */
+/* App                                                                */
+/* ---------------------------------------------------------------- */
+
+function App() {
+  return (
+    <React.Fragment>
+      <header className="page-header">
+        <h1>UI Components Showcase</h1>
+        <p>27 interactive component recreations from the @openai/apps-sdk-ui docs — scroll and try them out.</p>
+      </header>
+      <div className="gallery">
+        {COMPONENTS.map(({ title, desc, Preview, code }) => (
+          <ShowcaseCard key={title} title={title} desc={desc} code={code}>
+            <Preview />
+          </ShowcaseCard>
+        ))}
+      </div>
+      <footer className="page-footer">
+        Recreated for demonstration purposes — visual and interaction approximations of the documented components.
+      </footer>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+<script>
+  var source = document.getElementById("app-source").textContent;
+  var output = Babel.transform(source, { presets: [["react", { runtime: "classic" }]] }).code;
+  var runnable = document.createElement("script");
+  runnable.text = output;
+  document.body.appendChild(runnable);
+</script>
+</body>
+</html>
